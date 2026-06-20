@@ -1,0 +1,1 @@
+"""DRINKOO utility package."""

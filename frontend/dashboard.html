@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRINKOO - Dashboard</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Navigation Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>🥤 DRINKOO</h2>
+                <p id="currentUser"></p>
+            </div>
+            
+            <ul class="nav-menu">
+                <li><a href="#" onclick="navigateTo('dashboard')" class="nav-link active">Dashboard</a></li>
+                <li><a href="#" onclick="navigateTo('states')" class="nav-link">State Data</a></li>
+                <li><a href="#" onclick="navigateTo('skus')" class="nav-link">SKU Management</a></li>
+                <li><a href="#" onclick="navigateTo('shipments')" class="nav-link">Shipments</a></li>
+                <li><a href="#" onclick="navigateTo('chat')" class="nav-link">Chat</a></li>
+                <li><a href="#" onclick="navigateTo('reports')" class="nav-link">Reports</a></li>
+                <li style="margin-top: auto; border-top: 1px solid #ddd; padding-top: 1rem;">
+                    <a href="#" onclick="logout()" class="nav-link">Logout</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <section id="dashboardView" class="view active">
+                <h1>Dashboard</h1>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Total Customers</div>
+                        <div class="metric-value" id="totalCustomers">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Active SKUs</div>
+                        <div class="metric-value" id="totalSKUs">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Pending Shipments</div>
+                        <div class="metric-value" id="pendingShipments">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">States Covered</div>
+                        <div class="metric-value" id="statesCovered">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Total Revenue</div>
+                        <div class="metric-value" id="totalRevenue">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Total Shipments</div>
+                        <div class="metric-value" id="totalShipments">-</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- State Data View -->
+            <section id="statesView" class="view">
+                <h1>State-Wide Data</h1>
+                
+                <div class="form-group">
+                    <label for="stateSelector">Select State:</label>
+                    <select id="stateSelector" onchange="loadStateData()">
+                        <option value="">-- Choose a state --</option>
+                    </select>
+                </div>
+                
+                <div id="stateDataContainer" class="state-data-container" style="display: none;">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">State Customers</div>
+                            <div class="metric-value" id="stateCustomerCount">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Available SKUs</div>
+                            <div class="metric-value" id="stateSKUCount">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Pending Shipments</div>
+                            <div class="metric-value" id="statePendingShipments">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Total Revenue</div>
+                            <div class="metric-value" id="stateRevenue">-</div>
+                        </div>
+                    </div>
+                    
+                    <h3>Available SKUs in <span id="selectedStateName"></span></h3>
+                    <table class="data-table" id="stateSkuTable">
+                        <thead>
+                            <tr>
+                                <th>SKU Code</th>
+                                <th>Flavor</th>
+                                <th>Size (ml)</th>
+                                <th>Category</th>
+                                <th>Allocated Qty</th>
+                                <th>Distribution %</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SKU Management View -->
+            <section id="skusView" class="view">
+                <h1>SKU Management</h1>
+                
+                <button class="btn btn-primary" onclick="showAddSkuForm()">+ Add New SKU</button>
+                
+                <div id="skuFormContainer" style="display: none; margin-top: 2rem;">
+                    <h2>Create New SKU</h2>
+                    <form id="skuForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="skuCode">SKU Code *</label>
+                            <input type="text" id="skuCode" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="skuName">SKU Name *</label>
+                            <input type="text" id="skuName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="flavorProfile">Flavor Profile *</label>
+                            <input type="text" id="flavorProfile" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="drinkSize">Size (ml) *</label>
+                            <select id="drinkSize" required>
+                                <option value="">-- Select size --</option>
+                                <option value="1000">1000 ml</option>
+                                <option value="1500">1500 ml</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="manufacturingCost">Manufacturing Cost *</label>
+                            <input type="number" id="manufacturingCost" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="shippingCost">Shipping Cost *</label>
+                            <input type="number" id="shippingCost" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="retailPrice">Retail Price *</label>
+                            <input type="number" id="retailPrice" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="skuCategory">Category *</label>
+                            <select id="skuCategory" required>
+                                <option value="soda">Soda</option>
+                                <option value="juice">Juice</option>
+                                <option value="energy_drink">Energy Drink</option>
+                                <option value="water">Water</option>
+                                <option value="iced_tea">Iced Tea</option>
+                                <option value="coconut_water">Coconut Water</option>
+                                <option value="sparkling_water">Sparkling Water</option>
+                                <option value="sports_drink">Sports Drink</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn btn-primary">Create SKU</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideAddSkuForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <h2 style="margin-top: 2rem;">Active SKUs</h2>
+                <table class="data-table" id="skusTable">
+                    <thead>
+                        <tr>
+                            <th>SKU Code</th>
+                            <th>Name</th>
+                            <th>Flavor</th>
+                            <th>Size</th>
+                            <th>Category</th>
+                            <th>Mfg Cost</th>
+                            <th>Ship Cost</th>
+                            <th>Retail Price</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+
+            <!-- Shipments View -->
+            <section id="shipmentsView" class="view">
+                <h1>Shipment Management</h1>
+                
+                <button class="btn btn-primary" onclick="showCreateShipmentForm()">+ Create Shipment</button>
+                
+                <div id="shipmentFormContainer" style="display: none; margin-top: 2rem;">
+                    <h2>Create New Shipment</h2>
+                    <form id="shipmentForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="shipmentState">Destination State *</label>
+                            <select id="shipmentState" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="shipmentSku">SKU *</label>
+                            <select id="shipmentSku" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="shipmentQty">Quantity *</label>
+                            <input type="number" id="shipmentQty" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="shipmentDate">Shipment Date *</label>
+                            <input type="date" id="shipmentDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expectedDelivery">Expected Delivery Date</label>
+                            <input type="date" id="expectedDelivery">
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn btn-primary">Create Shipment</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideCreateShipmentForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <h2 style="margin-top: 2rem;">Track Shipment</h2>
+                <div class="form-group" style="max-width: 500px;">
+                    <label for="trackingCodeInput">Enter Tracking Code:</label>
+                    <input 
+                        type="text" 
+                        id="trackingCodeInput" 
+                        placeholder="DRINKOO-YYYYMMDDHHMMSS-XXXXXX"
+                    >
+                    <button class="btn btn-primary" onclick="trackShipment()">Track</button>
+                </div>
+                
+                <div id="shipmentDetails" style="display: none; margin-top: 2rem;">
+                    <h3>Shipment Details</h3>
+                    <table class="data-table">
+                        <tbody id="shipmentDetailsBody"></tbody>
+                    </table>
+                </div>
+                
+                <h2 style="margin-top: 2rem;">Recent Shipments</h2>
+                <table class="data-table" id="shipmentsTable">
+                    <thead>
+                        <tr>
+                            <th>Tracking Code</th>
+                            <th>State</th>
+                            <th>SKU Code</th>
+                            <th>Quantity</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+
+            <!-- Chat View -->
+            <section id="chatView" class="view">
+                <h1>DRINKOO Assistant</h1>
+                
+                <div class="chat-container">
+                    <div id="chatMessages" class="chat-messages"></div>
+                    
+                    <form id="chatForm" class="chat-form" onsubmit="sendChatMessage(event)">
+                        <input 
+                            type="text" 
+                            id="chatInput" 
+                            placeholder="Ask about customers, SKUs, sales, shipments..."
+                            required
+                        >
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Reports View -->
+            <section id="reportsView" class="view">
+                <h1>Reports</h1>
+                
+                <h2>Sales by State</h2>
+                <table class="data-table" id="salesByStateTable">
+                    <thead>
+                        <tr>
+                            <th>State</th>
+                            <th>Capital</th>
+                            <th>Total Revenue</th>
+                            <th>Units Sold</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                
+                <h2 style="margin-top: 2rem;">Top SKUs</h2>
+                <table class="data-table" id="topSkusTable">
+                    <thead>
+                        <tr>
+                            <th>SKU Code</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Units Sold</th>
+                            <th>Total Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/telemetry.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
